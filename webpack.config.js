@@ -12,14 +12,15 @@ const cssProd = ExtractTextPlugin.extract({
 });
 
 const cssConfig = isProduction ? cssProd : cssDev;
+// enable HMR if not in production mode
+const hmr = !isProduction ? [new webpack.HotModuleReplacementPlugin(), new webpack.NamedModulesPlugin()] : [];
 
 module.exports = {
     entry: {
-        app: './develope/app.js',
-        contact: './develope/contact.js'
+        index: './develope/js/index.js',
     },
     output: {
-        path: __dirname + '/dist',
+        path: path.resolve(__dirname, 'dist'),
         filename: '[name].bundle.js'
     },
     module: {
@@ -29,8 +30,10 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                exclude: [/node_modules/],
-                use: 'babel-loader'
+                loader: 'babel-loader',
+                query: {
+                    presets: ['babel-preset-es3'].map(require.resolve)
+                }
             },
             {
                 test: /\.(gif|png|jpe?g|svg)$/i,
@@ -53,27 +56,13 @@ module.exports = {
                 collapseWhitespace: true
             },
             hash: true,
-            excludeChunks: ['contact'],
-            contact: 'index.html',
             template: './develope/index.html'
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Contact page',
-            minify: {
-                collapseWhitespace: true
-            },
-            hash: true,
-            chunks: ['contact'],
-            filename: 'contact.html',
-            template: './develope/contact.html'
         }),
         new ExtractTextPlugin({
             filename: '[name].css',
             disable: !isProduction,
             allChunks: true
         }),
-        // enable HMR
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin()
-    ]
+        // enable HMR if not in production mode
+    ].concat(hmr)
 }
