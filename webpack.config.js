@@ -32,7 +32,7 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['babel-preset-es3'].map(require.resolve)
+                    presets: ['babel-preset-es2015', 'babel-preset-react'].map(require.resolve)
                 }
             },
             {
